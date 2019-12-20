@@ -1,0 +1,4 @@
+argparse==1.4.0
+colorama==0.3.9
+progressbar==2.5
+PyInstaller==2.1
