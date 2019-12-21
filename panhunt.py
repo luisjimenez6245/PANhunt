@@ -110,22 +110,9 @@ class PAN:
 
     @staticmethod
     def is_valid_luhn_checksum(pan):
-        """ from wikipedia: http://en.wikipedia.org/wiki/Luhn_algorithm"""
-
         pan = re.sub('[^\d]', '', pan)
-
-        def digits_of(n):
-            return [int(d) for d in str(n)]
-
-        digits = digits_of(pan)
-        odd_digits = digits[-1::-2]
-        even_digits = digits[-2::-2]
-        checksum = 0
-        checksum += sum(odd_digits)
-        for d in even_digits:
-            checksum += sum(digits_of(d * 2))
-
-        return checksum % 10 == 0
+        r = [int(ch) for ch in str(pan)][::-1]
+        return (sum(r[0::2]) + sum(sum(divmod(d * 2, 10)) for d in r[1::2])) % 10 == 0
 
 
 ###################################################################################################################################
