@@ -103,10 +103,7 @@ class PAN:
     def is_excluded(pan):
         global excluded_pans
 
-        for excluded_pan in excluded_pans:
-            if pan == excluded_pan:
-                return True
-        return False
+        return (pan in excluded_pans)
 
     @staticmethod
     def is_valid_luhn_checksum(pan):
