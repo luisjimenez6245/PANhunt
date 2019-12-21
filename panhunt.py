@@ -97,7 +97,7 @@ class PAN:
         return '%s %s:%s' % (self.sub_path, self.brand, pan_out)
 
     def get_masked_pan(self):
-        return re.sub('\d', '*', self.pan[:-4]) + self.pan[-4:]
+        return self.pan[0:6] + re.sub('\d', '*', self.pan[6:-4]) + self.pan[-4:]
 
     @staticmethod
     def is_excluded(pan):
