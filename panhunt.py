@@ -18,7 +18,7 @@ import ConfigParser
 import filehunt
 import psutil
 
-app_version = '1.2'
+app_version = '1.2.1'
 
 # defaults
 defaults = {
