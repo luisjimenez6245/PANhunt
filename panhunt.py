@@ -16,6 +16,7 @@ import platform
 import colorama
 import ConfigParser
 import filehunt
+import psutil
 
 app_version = '1.2'
 
@@ -275,6 +276,7 @@ if __name__ == "__main__":
     arg_parser.add_argument('-C', dest='config', default=config_file, help='configuration file to use')
     arg_parser.add_argument('-X', dest='excludepan', default=excluded_pans_string, help='PAN to exclude from search')
     arg_parser.add_argument('-c', dest='checkfilehash', help=argparse.SUPPRESS)  # hidden argument
+    arg_parser.add_argument('-N', dest='nice', action='store_false', default=True, help='reduce priority and scheduling class')
 
     args = arg_parser.parse_args()
 
@@ -296,6 +298,14 @@ if __name__ == "__main__":
     load_config_file()
 
     set_global_parameters()
+
+    if args.nice:
+        p = psutil.Process(os.getpid())
+        if sys.platform == 'win32':
+            p.nice(psutil.LOW_PRIORITY_CLASS)
+        else:
+            p.nice(10)
+            p.ionice(psutil.IOPRIO_CLASS_IDLE)
 
     total_files_searched, pans_found, all_files = hunt_pans()
 
