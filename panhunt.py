@@ -21,7 +21,7 @@ import psutil
 if sys.version_info[0] >= 3:
     unicode = str
 
-app_version = '1.2.1'
+app_version = '1.2.2'
 
 # defaults
 defaults = {
