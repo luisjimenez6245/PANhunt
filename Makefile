@@ -3,12 +3,29 @@ SHELL := /bin/bash
 
 PYTHON_MAIN_SCRIPTS := $(patsubst %.py,bin/%,$(notdir $(shell grep '__main__' -l $(CURDIR)/*.py)))
 
+# TODO change to `python` when python 3 is fully supported
+PYTHON=python2
+
+ifeq (, $(shell which ${PYTHON}))
+  $(error No python2 interpreter in PATH)
+endif
+
+python_version_full := $(wordlist 2,4,$(subst ., ,$(shell ${PYTHON} --version 2>&1)))
+python_version_major := $(word 1,${python_version_full})
+python_version_minor := $(word 2,${python_version_full})
+python_version_patch := $(word 3,${python_version_full})
+
+ifeq ($(shell expr $(python_version_major) \< 3), 1)
+  ifeq ($(shell expr $(python_version_minor) \< 7), 1)
+    $(error Python < 2.7 not supported)
+  endif
+endif
+
 .PHONY: help test run doc
 .EMPTY: lint
 
 VENV?=.venv
 VENV_ACTIVATE=. $(VENV)/bin/activate
-PYTHON=python2
 
 .DEFAULT: help
 
