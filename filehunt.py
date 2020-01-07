@@ -10,7 +10,6 @@ import os
 import sys
 import zipfile
 import datetime
-import cStringIO
 import unicodedata
 import codecs
 import colorama
@@ -18,6 +17,10 @@ import progressbar
 import pickle
 import pst  # MS-PST files
 import msmsg  # MS-MSG files
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 TEXT_FILE_SIZE_LIMIT = 1073741824  # 1Gb
 
@@ -77,7 +80,7 @@ class AFile:
     def set_error(self, error_msg):
 
         self.errors.append(error_msg)
-        print colorama.Fore.RED + unicode2ascii(u'ERROR %s on %s' % (error_msg, self.path)) + colorama.Fore.WHITE
+        print(colorama.Fore.RED + unicode2ascii(u'ERROR %s on %s' % (error_msg, self.path)) + colorama.Fore.WHITE)
 
     def check_regexs(self, regexs, search_extensions):
         """Checks the file for matching regular expressions: if a ZIP then each file in the ZIP (recursively) or the text in a document"""
@@ -185,7 +188,7 @@ class AFile:
         if attachment_ext in search_extensions['ZIP']:
             if attachment.data:
                 try:
-                    memory_zip = cStringIO.StringIO()
+                    memory_zip = StringIO()
                     memory_zip.write(attachment.data)
                     zf = zipfile.ZipFile(memory_zip)
                     self.check_zip_regexs(zf, regexs, search_extensions, os.path.join(sub_path, attachment.Filename))
@@ -210,7 +213,7 @@ class AFile:
         for file_in_zip in files_in_zip:
             if get_ext(file_in_zip) in search_extensions['ZIP']:  # nested zip file
                 try:
-                    memory_zip = cStringIO.StringIO()
+                    memory_zip = StringIO()
                     memory_zip.write(zf.open(file_in_zip).read())
                     nested_zf = zipfile.ZipFile(memory_zip)
                     self.check_zip_regexs(nested_zf, regexs, search_extensions, os.path.join(sub_path, decode_zip_filename(file_in_zip)))
@@ -226,7 +229,7 @@ class AFile:
             else:  # SPECIAL
                 try:
                     if get_ext(file_in_zip) == '.msg':
-                        memory_msg = cStringIO.StringIO()
+                        memory_msg = StringIO()
                         memory_msg.write(zf.open(file_in_zip).read())
                         msg = msmsg.MSMSG(memory_msg)
                         if msg.validMSG:
@@ -254,7 +257,7 @@ def find_all_files_in_directory(afile_class, root_dir, excluded_directories, sea
     all_extensions = [ext for ext_list in search_extensions.values() for ext in ext_list]
 
     extension_types = {}
-    for ext_type, ext_list in search_extensions.iteritems():
+    for (ext_type, ext_list) in search_extensions.items():
         for ext in ext_list:
             extension_types[ext] = ext_type
 

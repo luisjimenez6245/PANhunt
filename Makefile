@@ -8,6 +8,7 @@ PYTHON_MAIN_SCRIPTS := $(patsubst %.py,bin/%,$(notdir $(shell grep '__main__' -l
 
 VENV?=.venv
 VENV_ACTIVATE=. $(VENV)/bin/activate
+PYTHON=python2
 
 .DEFAULT: help
 
@@ -27,10 +28,10 @@ help:
 venv: $(VENV)/bin/activate
 
 $(VENV)/bin/activate: requirements.txt
-	test -d $(VENV) || virtualenv -p python2 $(VENV)
-	${VENV}/bin/pip install --extra-index-url https://pypi.org/simple --requirement requirements.txt
-	${VENV}/bin/pip install --extra-index-url https://pypi.org/simple pyflakes==1.3.0
-	${VENV}/bin/pip install --extra-index-url https://pypi.org/simple flake8==2.0
+	virtualenv -p $(PYTHON) $(VENV)
+	$(VENV)/bin/pip install --index-url https://pypi.org/simple --requirement requirements.txt
+	$(VENV)/bin/pip install --index-url https://pypi.org/simple pyflakes
+	$(VENV)/bin/pip install --index-url https://pypi.org/simple flake8
 	touch $(VENV)/bin/activate
 
 dist/panhunt: *.py

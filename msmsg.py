@@ -870,7 +870,7 @@ def size_friendly(size):
 def test_status_msg(msg_file):
 
     msg = MSMSG(msg_file)
-    print msg.cfb.directory
+    print(msg.cfb.directory)
     msg.close()
 
 

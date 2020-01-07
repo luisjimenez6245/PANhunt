@@ -14,9 +14,12 @@ import time
 import hashlib
 import platform
 import colorama
-import ConfigParser
+import configparser
 import filehunt
 import psutil
+
+if sys.version_info[0] >= 3:
+    unicode = str
 
 app_version = '1.2.1'
 
@@ -75,7 +78,7 @@ class PANFile(filehunt.AFile):
         """Uses regular expressions to check for PANs in text"""
 
         for brand, regex in regexs.items():
-            pans = regex.findall(text)
+            pans = regex.findall(text.decode('utf-8'))
             if pans:
                 for pan in pans:
                     if PAN.is_valid_luhn_checksum(pan) and not PAN.is_excluded(pan):
@@ -129,7 +132,7 @@ def get_text_hash(text):
         encoded_text = text.encode('utf-8')
     else:
         encoded_text = text
-    return hashlib.sha512(encoded_text + 'PAN').hexdigest()
+    return hashlib.sha512(encoded_text + b'PAN').hexdigest()
 
 
 def add_hash_to_file(text_file):
@@ -146,10 +149,10 @@ def check_file_hash(text_file):
     hash_in_file = text_output[hash_pos + len(os.linesep):]
     hash_check = get_text_hash(text_output[:hash_pos])
     if hash_in_file == hash_check:
-        print colorama.Fore.GREEN + 'Hashes OK'
+        print(colorama.Fore.GREEN + 'Hashes OK')
     else:
-        print colorama.Fore.RED + 'Hashes Not OK'
-    print colorama.Fore.WHITE + hash_in_file + '\n' + hash_check
+        print(colorama.Fore.RED + 'Hashes Not OK')
+    print(colorama.Fore.WHITE + hash_in_file + '\n' + hash_check)
 
 
 def output_report(search_dir, excluded_directories_string, all_files, total_files_searched, pans_found, output_file, mask_pans):
@@ -163,10 +166,12 @@ def output_report(search_dir, excluded_directories_string, all_files, total_file
 
     for afile in sorted([afile for afile in all_files if afile.matches]):
         pan_header = u'FOUND PANs: %s (%s %s)' % (afile.path, afile.size_friendly(), afile.modified.strftime('%d/%m/%Y'))
-        print colorama.Fore.RED + filehunt.unicode2ascii(pan_header)
+        print(colorama.Fore.RED)
+        print(filehunt.unicode2ascii(pan_header))
         pan_report += pan_header + '\n'
         pan_list = u'\t' + pan_sep.join([pan.__repr__(mask_pans) for pan in afile.matches])
-        print colorama.Fore.YELLOW + filehunt.unicode2ascii(pan_list)
+        print(colorama.Fore.YELLOW)
+        print(filehunt.unicode2ascii(pan_list))
         pan_report += pan_list + '\n\n'
 
     if len([afile for afile in all_files if afile.type == 'OTHER']) != 0:
@@ -176,7 +181,8 @@ def output_report(search_dir, excluded_directories_string, all_files, total_file
 
     pan_report = pan_report.replace('\n', os.linesep)
 
-    print colorama.Fore.WHITE + 'Report written to %s' % filehunt.unicode2ascii(output_file)
+    print(colorama.Fore.WHITE)
+    print('Report written to %s' % filehunt.unicode2ascii(output_file))
     filehunt.write_unicode_file(output_file, pan_report)
     add_hash_to_file(output_file)
 
@@ -188,7 +194,7 @@ def load_config_file():
     if not os.path.isfile(config_file):
         return
 
-    config = ConfigParser.ConfigParser()
+    config = configparser.ConfigParser()
     config.read(config_file)
     default_config = {}
     for nvp in config.items('DEFAULT'):

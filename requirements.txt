@@ -1,5 +1,6 @@
-argparse==1.4.0
-colorama==0.3.9
+altgraph==0.16.1
+colorama==0.4.3
 progressbar==2.5
 psutil==5.6.7
-PyInstaller==2.1
+PyInstaller==3.5
+ConfigParser==4.0.2
