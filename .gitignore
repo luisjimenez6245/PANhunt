@@ -38,3 +38,5 @@ nosetests.xml
 .project
 .pydevproject
 PANhunt.pyproj
+.DS_Store
+*.txt

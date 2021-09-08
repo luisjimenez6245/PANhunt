@@ -18,6 +18,9 @@ import configparser
 import filehunt
 import psutil
 
+from pathlib import Path
+home = str(Path.home())
+
 if sys.version_info[0] >= 3:
     unicode = str
 
@@ -25,7 +28,7 @@ app_version = '1.2.2'
 
 # defaults
 defaults = {
-    'search_dir': os.getcwd(),
+    'search_dir': home,
     'output_file': u'panhunt_%s.txt' % time.strftime("%Y-%m-%d-%H%M%S"),
     'excluded_directories_string': u'C:\\Windows,C:\\Program Files,C:\\Program Files (x86)',
     'text_extensions_string': u'.doc,.xls,.xml,.txt,.csv,.log,.tmp,.bak,.rtf,.csv,.htm,.html,.js,.css,.md',
@@ -163,8 +166,9 @@ def output_report(search_dir, excluded_directories_string, all_files, total_file
     pan_report += u'Command: %s\n' % (' '.join(sys.argv))
     pan_report += u'Uname: %s\n' % (' | '.join(platform.uname()))
     pan_report += u'Searched %s files. Found %s possible PANs.\n%s\n\n' % (total_files_searched, pans_found, '=' * 100)
-
-    for afile in sorted([afile for afile in all_files if afile.matches]):
+    items = [afile for afile in all_files if afile.matches]
+    print(items)
+    for afile in sorted(items, key=lambda x: x.__cmp__()):
         pan_header = u'FOUND PANs: %s (%s %s)' % (afile.path, afile.size_friendly(), afile.modified.strftime('%d/%m/%Y'))
         print(colorama.Fore.RED)
         print(filehunt.unicode2ascii(pan_header))
@@ -176,7 +180,7 @@ def output_report(search_dir, excluded_directories_string, all_files, total_file
 
     if len([afile for afile in all_files if afile.type == 'OTHER']) != 0:
         pan_report += u'Interesting Files to check separately:\n'
-    for afile in sorted([afile for afile in all_files if afile.type == 'OTHER']):
+    for afile in sorted([afile for afile in all_files if afile.type == 'OTHER'], key=lambda x: x.__cmp__()):
         pan_report += u'%s (%s %s)\n' % (afile.path, afile.size_friendly(), afile.modified.strftime('%d/%m/%Y'))
 
     pan_report = pan_report.replace('\n', os.linesep)
@@ -311,7 +315,6 @@ if __name__ == "__main__":
             p.nice(psutil.LOW_PRIORITY_CLASS)
         else:
             p.nice(10)
-            p.ionice(psutil.IOPRIO_CLASS_IDLE)
 
     total_files_searched, pans_found, all_files = hunt_pans()
 

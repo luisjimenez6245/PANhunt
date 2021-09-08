@@ -47,9 +47,9 @@ class AFile:
         self.type = None
         self.matches = []
 
-    def __cmp__(self, other):
+    def __cmp__(self):
 
-        return cmp(self.path.lower(), other.path.lower())
+        return self.path.lower()
 
     def set_file_stats(self):
 
@@ -59,9 +59,9 @@ class AFile:
             self.accessed = self.dtm_from_ts(stat.st_atime)
             self.modified = self.dtm_from_ts(stat.st_mtime)
             self.created = self.dtm_from_ts(stat.st_ctime)
-        except Exception:  # WindowsError:
+        except Exception as ex:  # WindowsError:
             self.size = -1
-            self.set_error(sys.exc_info()[1])
+            print(ex)
 
     def dtm_from_ts(self, ts):
 
@@ -80,7 +80,7 @@ class AFile:
     def set_error(self, error_msg):
 
         self.errors.append(error_msg)
-        print(colorama.Fore.RED + unicode2ascii(u'ERROR %s on %s' % (error_msg, self.path)) + colorama.Fore.WHITE)
+        print(colorama.Fore.RED + unicode2ascii(u'ERROR %s on %s' % (error_msg, self.path)).decode("utf-8")  + colorama.Fore.WHITE)
 
     def check_regexs(self, regexs, search_extensions):
         """Checks the file for matching regular expressions: if a ZIP then each file in the ZIP (recursively) or the text in a document"""
@@ -130,7 +130,7 @@ class AFile:
         # all_extensions = search_extensions['TEXT'] + search_extensions['ZIP'] + search_extensions['SPECIAL']
 
         if not gauge_update_function:
-            pbar_widgets = ['%s Hunt %s: ' % (hunt_type, unicode2ascii(self.filename)), progressbar.Percentage(), ' ', progressbar.Bar(marker=progressbar.RotatingMarker()), ' ', progressbar.ETA(), progressbar.FormatLabel(' %ss:0' % hunt_type)]
+            pbar_widgets = ['%s Hunt %s: ' % (hunt_type, unicode2ascii(self.filename).decode("utf-8") ), progressbar.Percentage(), ' ', progressbar.Bar(marker=progressbar.RotatingMarker()), ' ', progressbar.ETA(), progressbar.FormatLabel(' %ss:0' % hunt_type)]
             pbar = progressbar.ProgressBar(widgets=pbar_widgets).start()
         else:
             gauge_update_function(caption='%s Hunt: ' % hunt_type)
@@ -421,12 +421,12 @@ def unicode2ascii(unicode_str):
     return unicodedata.normalize('NFKD', unicode_str).encode('ascii', 'ignore')
 
 
-def decode_zip_filename(str):
+def decode_zip_filename(content):
 
-    if type(str) is unicode:
-        return str
+    if isinstance(content, str):
+        return content
     else:
-        return str.decode('cp437')
+        return content.decode('cp437')
 
 
 def get_ext(file_name):
