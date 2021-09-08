@@ -835,6 +835,7 @@ class PropIdEnum:
     PidTagSensitivity = 0x0036
     PidTagSubjectW = 0x0037
     PidTagClientSubmitTime = 0x0039
+    PidTagSentRepresentingSearchKey = 0x003B
     PidTagSentRepresentingNameW = 0x0042
     PidTagMessageToMe = 0x0057
     PidTagMessageCcMe = 0x0058
@@ -849,6 +850,7 @@ class PropIdEnum:
     PidTagReplCopiedfromVersionhistory = 0x0E3C
     PidTagReplCopiedfromItemid = 0x0E3D
     PidTagLastModificationTime = 0x3008
+    PidTagSmtpAddress = 0x39FE
     PidTagSecureSubmitFlags = 0x65C6
     PidTagOfflineAddressBookName = 0x6800
     PidTagSendOutlookRecallReport = 0x6803
@@ -874,7 +876,10 @@ class PropIdEnum:
     PidTagAttachFilename = 0x3704
     PidTagAttachMethod = 0x3705
     PidTagRenderingPosition = 0x370B
+    PidTagSenderEntryId = 0x0C19
     PidTagSenderName = 0x0C1A
+    PidTagSenderSearchKey = 0x0C1D
+    PidTagSenderAddressType = 0x0C1E
     PidTagRead = 0x0E69
     PidTagHasAttachments = 0x0E1B
     PidTagBody = 0x1000
@@ -885,6 +890,8 @@ class PropIdEnum:
     PidTagTransportMessageHeaders = 0x007D
     PidTagSenderSmtpAddress = 0x5D01
     PidTagSentRepresentingSmtpAddress = 0x5D02
+    PidTagReceivedBySmtpAddress = 0x5D07
+    PidTagReceivedRepresentingSmtpAddress = 0x5D08
     PidTagAttachMimeTag = 0x370E
     PidTagAttachExtension = 0x3703
     PidTagAttachLongFilename = 0x3707
@@ -1243,15 +1250,15 @@ class Folder:
         self.ContainerClass = self.pc.getval(PropIdEnum.PidTagContainerClass)
         self.HasSubfolders = self.pc.getval(PropIdEnum.PidTagSubfolders)
 
-        nid_hierachy = NID(nid.nidIndex | NID.NID_TYPE_HIERARCHY_TABLE)
+        nid_hierarchy = NID(nid.nidIndex | NID.NID_TYPE_HIERARCHY_TABLE)
         nid_contents = NID(nid.nidIndex | NID.NID_TYPE_CONTENTS_TABLE)
         nid_fai = NID(nid.nidIndex | NID.NID_TYPE_ASSOC_CONTENTS_TABLE) # FAI = Folder Associated Information
 
         try:
-            self.tc_hierachy = None
+            self.tc_hierarchy = None
             self.subfolders = []
-            self.tc_hierachy = ltp.get_tc_by_nid(nid_hierachy)
-            self.subfolders = [SubFolder(self.tc_hierachy.RowIndex[RowIndex].nid, self.tc_hierachy.getval(RowIndex,PropIdEnum.PidTagDisplayName), self.path) for RowIndex in range(len(self.tc_hierachy.RowIndex))]
+            self.tc_hierarchy = ltp.get_tc_by_nid(nid_hierarchy)
+            self.subfolders = [SubFolder(self.tc_hierarchy.RowIndex[RowIndex].nid, self.tc_hierarchy.getval(RowIndex,PropIdEnum.PidTagDisplayName), self.path) for RowIndex in range(len(self.tc_hierarchy.RowIndex))]
         except PSTException as e:
             log_error(e)
 
