@@ -736,7 +736,7 @@ class PType:
             count = len(bytes) // 4
             return [struct.unpack('f', bytes[i*4:(i+1)*4])[0] for i in range(count)]
         elif self.ptype == PTypeEnum.PtypMultipleFloating64:
-            ccount = len(bytes) // 8
+            count = len(bytes) // 8
             return [struct.unpack('d', bytes[i*8:(i+1)*8])[0] for i in range(count)]
         elif self.ptype == PTypeEnum.PtypMultipleCurrency:
             raise PSTException('PtypMultipleCurrency value not implemented')
@@ -1346,7 +1346,7 @@ class Message:
             self.pc = PC(hn)
         else:
             if nid.nidType != NID.NID_TYPE_NORMAL_MESSAGE:
-                raise PSTException('Invalid Message NID Type: %s' % nid_pc.nidType)
+                raise PSTException('Invalid Message NID Type: %s' % nid.nidType)
             self.pc = ltp.get_pc_by_nid(nid)
 
         # entryids in PST are stored as nids

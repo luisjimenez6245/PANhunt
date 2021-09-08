@@ -199,9 +199,9 @@ class DirectoryEntry:
         self.childs = {}
     
                     
-    def __cmp__(self, other):
+    def __cmp__(self):
     
-        return cmp(self.Name, other.Name)
+        return self.Name
 
 
     def get_data(self):
@@ -487,10 +487,10 @@ class PType:
             count = len(bytes) / 4
             return [struct.unpack('f', bytes[i*4:(i+1)*4])[0] for i in range(count)]
         elif self.ptype == PTypeEnum.PtypMultipleFloating64:
-            ccount = len(bytes) / 8
+            count = len(bytes) / 8
             return [struct.unpack('d', bytes[i*8:(i+1)*8])[0] for i in range(count)]
         elif self.ptype == PTypeEnum.PtypMultipleCurrency:
-            raise PSTException('PtypMultipleCurrency value not implemented')
+            raise Exception('PtypMultipleCurrency value not implemented')
         elif self.ptype == PTypeEnum.PtypMultipleFloatingTime:
             count = len(bytes) / 8
             return [self.get_floating_time(bytes[i*8:(i+1)*8]) for i in range(count)]
@@ -498,6 +498,7 @@ class PType:
             count = len(bytes) / 8
             return [struct.unpack('q', bytes[i*8:(i+1)*8])[0] for i in range(count)]
         elif self.ptype == PTypeEnum.PtypMultipleString:
+            s = []
             for item_bytes in bytes:          
                 s.append(item_bytes.decode('utf-16-le'))
             return s

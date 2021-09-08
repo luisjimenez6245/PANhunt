@@ -4,7 +4,7 @@ SHELL := /bin/bash
 PYTHON_MAIN_SCRIPTS := $(patsubst %.py,bin/%,$(notdir $(shell grep '__main__' -l $(CURDIR)/*.py)))
 
 # TODO change to `python` when python 3 is fully supported
-PYTHON=python2
+PYTHON=python3
 
 ifeq (, $(shell which ${PYTHON}))
   $(error No python2 interpreter in PATH)
@@ -52,7 +52,7 @@ $(VENV)/bin/activate: requirements.txt
 	touch $(VENV)/bin/activate
 
 dist/panhunt: *.py
-	${VENV}/bin/pyinstaller --onefile panhunt.py
+	${VENV}/bin/pyinstaller --onefile main.py
 
 build: | venv dist/panhunt
 
