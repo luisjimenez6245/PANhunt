@@ -312,7 +312,7 @@ if __name__ == "__main__":
     if args.nice:
         p = psutil.Process(os.getpid())
         if sys.platform == 'win32':
-            p.nice(psutil.LOW_PRIORITY_CLASS)
+            p.nice(psutil.BELOW_NORMAL_PRIORITY_CLASS)
         else:
             p.nice(10)
 
