@@ -24,7 +24,7 @@ endif
 .PHONY: help test run doc
 .EMPTY: lint
 
-VENV?=.venv
+VENV?=venv
 VENV_ACTIVATE=. $(VENV)/bin/activate
 
 .DEFAULT: help
