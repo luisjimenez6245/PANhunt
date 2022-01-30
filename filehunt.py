@@ -268,25 +268,12 @@ def find_all_files_in_directory(afile_class, root_dir, excluded_directories, sea
         gauge_update_function(caption='Doc Hunt: ')
 
     doc_files = []
-    root_dir_dirs = None
-    root_items_completed = 0
-    docs_found = 0
+  
 
     for root, sub_dirs, files in os.walk(root_dir):
         sub_dirs[:] = [check_dir for check_dir in sub_dirs if os.path.join(root, check_dir).lower() not in excluded_directories]
-        if not root_dir_dirs:
-            root_dir_dirs = [os.path.join(root, sub_dir) for sub_dir in sub_dirs]
-            root_total_items = len(root_dir_dirs) + len(files)
-        if root in root_dir_dirs:
-            root_items_completed += 1
-            if not gauge_update_function:
-                pbar_widgets[6] = progressbar.FormatLabel(' Docs:%s' % docs_found)
-                pbar.update(root_items_completed * 100.0 / root_total_items)
-            else:
-                gauge_update_function(value=root_items_completed * 100.0 / root_total_items)
         for filename in files:
-            if root == root_dir:
-                root_items_completed += 1
+            
             afile = afile_class(filename, root)  # AFile or PANFile
             if afile.ext.lower() in all_extensions:
                 afile.set_file_stats()
@@ -296,15 +283,9 @@ def find_all_files_in_directory(afile_class, root_dir, excluded_directories, sea
                     afile.set_error('File size {1} over limit of {0} for checking'.format(get_friendly_size(TEXT_FILE_SIZE_LIMIT), afile.size_friendly()))
                 doc_files.append(afile)
                 if not afile.errors:
-                    docs_found += 1
-                if not gauge_update_function:
-                    pbar_widgets[6] = progressbar.FormatLabel(' Docs:%s' % docs_found)
-                    pbar.update(root_items_completed * 100.0 / root_total_items)
-                else:
-                    gauge_update_function(value=root_items_completed * 100.0 / root_total_items)
+               
 
-    if not gauge_update_function:
-        pbar.finish()
+
 
     return doc_files
 

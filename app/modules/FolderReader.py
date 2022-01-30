@@ -1,7 +1,8 @@
 import os
-from typing import List, Optional
-from pathlib import Path
-
+import re
+from typing import Dict, List, Optional
+from core.Config import settings, logger
+from models import File
 
 class FolderReader:
 
@@ -9,22 +10,12 @@ class FolderReader:
 
     def __init__(
         self,
-        paths_to_ignore: Optional[List[str]] = None,
+        paths_to_ignore: Optional[List[str]] = settings.folders_to_ignore,
     ):
         if paths_to_ignore is None:
             paths_to_ignore = []
 
         self.paths_to_ignore = paths_to_ignore
-
-    def get_all_files(self, path: str = Path.home()) -> List[str]:
-        paths = self.get_paths(path)
-        files = []
-        for path in paths:
-            try:
-                files += self.get_files(path)
-            except Exception as e:
-                print(e)
-        return files
 
     def get_files(self, path: str) -> List[str]:
         result = []
@@ -34,14 +25,28 @@ class FolderReader:
             if os.path.isfile(full_path):
                 result.append(full_path)
         return result
+    
+    def should_include_path(self, *paths: List[str]) -> bool:
+        for path in paths:
+            if path in self.paths_to_ignore:
+                return False
+        for path in paths:
+            for item in settings.regex_to_ignore:
+                if item.search(path):
+                    return False
+        return True
 
-    def get_paths(self, path: str) -> List[str]:
-        paths = []
+    def get_all_files(self, path: str = settings.main_folder) -> Dict:
+        paths = {}
         for root, dirs, files in os.walk(path):
-            if(dirs is not None):
-                for dir in dirs:
-                    if(dir not in self.paths_to_ignore):
-                        full_path = os.path.join(root, dir)
-                        if(full_path not in self.paths_to_ignore):
-                            paths.append(full_path)
+            dirs[:] = [check_dir for check_dir in dirs if os.path.join(root, check_dir).lower() not in settings.folders_to_ignore]
+            last_path = root.split(os.sep)[-1]
+            if self.should_include_path(last_path, root):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    if self.should_include_path(file, file_path):
+                        file_model = File(file_path, file, root)
+                        if(file_model.should_analyze()):
+                            paths[file_path] = file_model
+        logger.info("Found {} files".format(len(paths)))
         return paths
