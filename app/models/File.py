@@ -12,6 +12,10 @@ class File(Model):
     accessed: datetime
     modified: datetime
     created: datetime
+    file_name: str
+    file_path: str
+    file_extension: str
+    is_readable: bool
 
     def __init__(self, self_path: str, self_name: str, self_folder: str):
         self.file_name = self_name
@@ -43,11 +47,6 @@ class File(Model):
     def should_analyze(self) -> bool:
         self.set_file_stats()
         return self.is_readable and self.size < settings.max_file_size
-
-    file_name: str
-    file_path: str
-    file_extension: str
-    is_readable: bool
 
     @classmethod
     def get_models_from_paths(cls, paths: List[str]) -> List:

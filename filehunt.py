@@ -282,9 +282,7 @@ def find_all_files_in_directory(afile_class, root_dir, excluded_directories, sea
                     afile.type = 'OTHER'
                     afile.set_error('File size {1} over limit of {0} for checking'.format(get_friendly_size(TEXT_FILE_SIZE_LIMIT), afile.size_friendly()))
                 doc_files.append(afile)
-                if not afile.errors:
                
-
 
 
     return doc_files
