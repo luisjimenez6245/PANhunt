@@ -158,12 +158,11 @@ def check_file_hash(text_file):
     print(colorama.Fore.WHITE + hash_in_file + '\n' + hash_check)
 
 
-def output_report(search_dir, excluded_directories_string, all_files, total_files_searched, pans_found, output_file, mask_pans):
+def output_report(search_dir = "", excluded_directories_string = "", all_files = [], total_files_searched = 0, pans_found = 0, output_file = "output.txt", mask_pans = False):
 
     pan_sep = u'\n\t'
     pan_report = u'PAN Hunt Report - %s\n%s\n' % (time.strftime("%H:%M:%S %d/%m/%Y"), '=' * 100)
     pan_report += u'Searched %s\nExcluded %s\n' % (search_dir, excluded_directories_string)
-    pan_report += u'Command: %s\n' % (' '.join(sys.argv))
     pan_report += u'Uname: %s\n' % (' | '.join(platform.uname()))
     pan_report += u'Searched %s files. Found %s possible PANs.\n%s\n\n' % (total_files_searched, pans_found, '=' * 100)
     items = [afile for afile in all_files if afile.matches]
