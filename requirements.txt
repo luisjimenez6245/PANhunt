@@ -3,4 +3,4 @@ colorama==0.4.3
 configparser==4.0.2
 macholib==1.15.1
 progressbar==2.5
-psutil
+psutil==5.8.0
