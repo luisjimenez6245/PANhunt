@@ -79,13 +79,19 @@ class PANFile(filehunt.AFile):
 
     def check_text_regexs(self, text, regexs, sub_path):
         """Uses regular expressions to check for PANs in text"""
-
-        for brand, regex in regexs.items():
-            pans = regex.findall(text.decode('utf-8', 'replace'))
-            if pans:
-                for pan in pans:
-                    if PAN.is_valid_luhn_checksum(pan) and not PAN.is_excluded(pan):
-                        self.matches.append(PAN(self.path, sub_path, brand, pan))
+        try: 
+            for brand, regex in regexs.items():
+                pans = []
+                if not isinstance(text, str):
+                    pans = regex.findall(text.decode('utf-8', 'replace'))
+                else:
+                    pans = regex.findall(text)
+                if pans:
+                    for pan in pans:
+                        if PAN.is_valid_luhn_checksum(pan) and not PAN.is_excluded(pan):
+                            self.matches.append(PAN(self.path, sub_path, brand, pan))
+        except Exception as ex:
+            print(ex)
 
 
 class PAN:
